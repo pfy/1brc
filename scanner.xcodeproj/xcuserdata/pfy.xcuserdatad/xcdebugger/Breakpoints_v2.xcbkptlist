@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "C415BF4B-62E1-434A-9503-53D4FD74D514"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DC92A91E-ABBB-4E42-B0A9-7A79B6ED7459"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "scanner/main.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "92"
+            endingLineNumber = "92"
+            landmarkName = "unknown"
+            landmarkType = "0">
+            <Locations>
+               <Location
+                  uuid = "DC92A91E-ABBB-4E42-B0A9-7A79B6ED7459 - cb64c848307f1046"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "scanner"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "105"
+                  endingLineNumber = "105"
+                  offsetFromSymbolStart = "5300">
+               </Location>
+               <Location
+                  uuid = "DC92A91E-ABBB-4E42-B0A9-7A79B6ED7459 - cb64c848307f1046"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "scanner"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "105"
+                  endingLineNumber = "105"
+                  offsetFromSymbolStart = "5496">
+               </Location>
+               <Location
+                  uuid = "DC92A91E-ABBB-4E42-B0A9-7A79B6ED7459 - cb64c848307f10da"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "scanner"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "109"
+                  endingLineNumber = "109"
+                  offsetFromSymbolStart = "6248">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6BE11846-B94C-4417-AC96-78461A14AF21"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "scanner/main.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "89"
+            endingLineNumber = "89"
+            landmarkName = "unknown"
+            landmarkType = "0">
+            <Locations>
+               <Location
+                  uuid = "6BE11846-B94C-4417-AC96-78461A14AF21 - cb64c848307f1046"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "scanner"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "105"
+                  endingLineNumber = "105"
+                  offsetFromSymbolStart = "5300">
+               </Location>
+               <Location
+                  uuid = "6BE11846-B94C-4417-AC96-78461A14AF21 - cb64c848307f1046"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "scanner"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "105"
+                  endingLineNumber = "105"
+                  offsetFromSymbolStart = "5496">
+               </Location>
+               <Location
+                  uuid = "6BE11846-B94C-4417-AC96-78461A14AF21 - cb64c848307f10da"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "scanner"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "109"
+                  endingLineNumber = "109"
+                  offsetFromSymbolStart = "6248">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0A563DFC-07CE-4298-A936-DDC7027C5BF1"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "scanner/main.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "68"
+            endingLineNumber = "68"
+            landmarkName = "unknown"
+            landmarkType = "0">
+            <Locations>
+               <Location
+                  uuid = "0A563DFC-07CE-4298-A936-DDC7027C5BF1 - cb64c848307f0e8d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "scanner"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "64"
+                  endingLineNumber = "64"
+                  offsetFromSymbolStart = "5184">
+               </Location>
+               <Location
+                  uuid = "0A563DFC-07CE-4298-A936-DDC7027C5BF1 - cb64c848307f1046"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "scanner"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "105"
+                  endingLineNumber = "105"
+                  offsetFromSymbolStart = "5300">
+               </Location>
+               <Location
+                  uuid = "0A563DFC-07CE-4298-A936-DDC7027C5BF1 - cb64c848307f1046"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "scanner"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "105"
+                  endingLineNumber = "105"
+                  offsetFromSymbolStart = "5496">
+               </Location>
+               <Location
+                  uuid = "0A563DFC-07CE-4298-A936-DDC7027C5BF1 - cb64c848307f10da"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "scanner"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "109"
+                  endingLineNumber = "109"
+                  offsetFromSymbolStart = "6248">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
