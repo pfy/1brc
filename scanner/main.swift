@@ -12,13 +12,16 @@ class Statistic {
     var max: Float;
     var count: Int;
     var sum: Float;
-    init(min: Float, max: Float, count: Int, sum: Float) {
+    let name: [UInt8]
+    init(min: Float, max: Float, count: Int, sum: Float, name: [UInt8]) {
         self.min = min
         self.max = max
         self.count = count
         self.sum = sum
+        self.name = name
     }
 }
+
 struct DictionaryKey: Hashable {
     let hashValue: Int
     let bytes: [UInt8]
@@ -27,11 +30,18 @@ struct DictionaryKey: Hashable {
             hasher.combine(bytes: rawBytes)
         }
     }
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        if rhs.hashValue == lhs.hashValue && lhs.bytes.count == rhs.bytes.count && rhs.bytes.count < 8 {
+            return true
+        }
+        return lhs.bytes == rhs.bytes
+    }
 }
 
-print("Hello, World!")
+
+
+
 let path = "/Users/pfy/Devel/1brc/measurements.txt"
-let bufferSize = 1024 * 1024 * 16
 let newline = "\n".data(using: .utf8)![0]
 let semicolon = ";".data(using: .utf8)![0]
 let zero = "0".data(using: .utf8)![0]
@@ -62,6 +72,7 @@ let operationQueue = OperationQueue()
 for subdata in datas {
     operationQueue.addOperation {
         var byCityThreaded = [DictionaryKey: Statistic]()
+        byCityThreaded.reserveCapacity(1024)
         
         data.withUnsafeBytes { fullPtr in
             guard let subrangeStart = fullPtr.baseAddress?.advanced(by: subdata.0),
@@ -74,9 +85,11 @@ for subdata in datas {
             var cityNameBytes = [] as [UInt8]
             while true {
                 cityNameBytes.removeAll(keepingCapacity: true)
+
                 var cityNameHashCode = 0
                 while let byte = iterator.next()   {
                     if byte == semicolon {
+                 
                         break
                     }                    
                     cityNameHashCode = (31 &* cityNameHashCode) &+ (Int(byte))
@@ -115,7 +128,7 @@ for subdata in datas {
                     statistic.count += 1
                     statistic.sum += value
                 } else {
-                    byCityThreaded[cityName] = Statistic(min: value, max: value, count: 1, sum: value)
+                    byCityThreaded[cityName] = Statistic(min: value, max: value, count: 1, sum: value, name: cityNameBytes)
                 }
             }
             byCityLock.withLock {
@@ -134,12 +147,12 @@ for subdata in datas {
 operationQueue.waitUntilAllOperationsAreFinished()
 
 print("All tasks completed")
-let output = byCity.keys.map({ data in
-    return (String(bytes: data.bytes, encoding: .utf8)!, data)
+let output = byCity.values.map({ value in
+    return (String(bytes: value.name, encoding: .utf8)!, value)
 }).sorted(by: { a, b in
     return a.0 < b.0
-}).map{ key in
-    let statistics = byCity[key.1]!
-    return  String(format: "%@=%.1f/%.1f/%.1f", key.0, statistics.min, statistics.sum / Float(statistics.count), statistics.max)
+}).map{ data in
+    let statistics = data.1
+    return  String(format: "%@=%.1f/%.1f/%.1f", data.0, statistics.min, statistics.sum / Float(statistics.count), statistics.max)
 }.joined(separator: ", ")
 print("{\(output)}")
