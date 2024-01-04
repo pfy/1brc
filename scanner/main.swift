@@ -38,7 +38,11 @@ struct DictionaryKey: Hashable {
     }
 }
 
-
+/*let tst = SimpleHashMap(capacity: 10)
+tst[DictionaryKey(hashValue: 123, bytes: [0xff,0xff])] = Statistic(min: 0, max: 0, count: 0, sum: 0, name: [0xff,0xff])
+for elem in tst {
+    print(elem)
+}*/
 
 
 let path = "/Users/pfy/Devel/1brc/measurements.txt"
@@ -47,6 +51,8 @@ let semicolon = ";".data(using: .utf8)![0]
 let zero = "0".data(using: .utf8)![0]
 let point = ".".data(using: .utf8)![0]
 let minus = "-".data(using: .utf8)![0]
+let FNV_prime =  0x100000001b3 as Int
+let FNV_offset_basis =  Int(bitPattern: 0xcbf29ce484222325)
 
 var byCity = [DictionaryKey: Statistic]()
 var byCityLock = NSRecursiveLock()
@@ -71,8 +77,7 @@ let operationQueue = OperationQueue()
 
 for subdata in datas {
     operationQueue.addOperation {
-        var byCityThreaded = [DictionaryKey: Statistic]()
-        byCityThreaded.reserveCapacity(1024)
+        let byCityThreaded = SimpleHashMap(capacity: 1024)
         
         data.withUnsafeBytes { fullPtr in
             guard let subrangeStart = fullPtr.baseAddress?.advanced(by: subdata.0),
@@ -86,13 +91,13 @@ for subdata in datas {
             while true {
                 cityNameBytes.removeAll(keepingCapacity: true)
 
-                var cityNameHashCode = 0
+                var cityNameHashCode = FNV_offset_basis
                 while let byte = iterator.next()   {
                     if byte == semicolon {
                  
                         break
                     }                    
-                    cityNameHashCode = (31 &* cityNameHashCode) &+ (Int(byte))
+                    cityNameHashCode = (cityNameHashCode ^ Int(byte)) &* FNV_prime
                     cityNameBytes.append(byte)
                 }
                 
@@ -156,3 +161,60 @@ let output = byCity.values.map({ value in
     return  String(format: "%@=%.1f/%.1f/%.1f", data.0, statistics.min, statistics.sum / Float(statistics.count), statistics.max)
 }.joined(separator: ", ")
 print("{\(output)}")
+
+
+
+class SimpleHashMap:  Collection, Sequence {
+    private var _values: [Statistic?]
+    private var _keys: [DictionaryKey?]
+    private var _capacity: Int
+    func index(after i: Int) -> Int {
+        var n = i+1
+        while n < _keys.count &&  _keys[n] == nil && n < _capacity {
+            n += 1
+        }
+        return n
+    }
+    var startIndex: Int { return index(after: -1) }
+    var endIndex: Int   { return _capacity }
+    subscript(index: Int) -> Element {
+           return (_keys[index]!,_values[index]!)
+    }
+    
+    typealias Element = (DictionaryKey, Statistic)
+
+
+    init(capacity: Int) {
+        _capacity = capacity
+        _values = Array(repeating: nil, count: capacity)
+        _keys = Array(repeating: nil, count: capacity)
+    }
+    subscript(key: DictionaryKey) -> Statistic? { 
+        get {
+             let index = find(key: key)
+            return _values[index]
+            
+        }
+        set {
+            let index = find(key: key)
+                _values[index] = newValue
+                _keys[index] = key
+
+            
+        }
+    }
+
+    func find(key: DictionaryKey) -> Int {
+        let hash = (key.hashValue % _capacity + _capacity) % _capacity
+        var distance = 1
+        var index = hash
+        while _keys[index] != nil && _keys[index] != key {
+            index = (index + distance) % _capacity
+            distance = distance * 2
+        }
+        return index
+    }
+  
+    
+}
+
