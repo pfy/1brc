@@ -19,6 +19,15 @@ class Statistic {
         self.sum = sum
     }
 }
+struct DictionaryKey: Hashable {
+    let hashValue: Int
+    let bytes: [UInt8]
+    func hash(into hasher: inout Hasher) {
+        withUnsafeBytes(of: hashValue) { rawBytes in
+            hasher.combine(bytes: rawBytes)
+        }
+    }
+}
 
 print("Hello, World!")
 let path = "/Users/pfy/Devel/1brc/measurements.txt"
@@ -29,14 +38,14 @@ let zero = "0".data(using: .utf8)![0]
 let point = ".".data(using: .utf8)![0]
 let minus = "-".data(using: .utf8)![0]
 
-var byCity = [[UInt8]: Statistic]()
+var byCity = [DictionaryKey: Statistic]()
 var byCityLock = NSRecursiveLock()
 
 
 let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .alwaysMapped)
 let numberOfCores = ProcessInfo.processInfo.activeProcessorCount
 
-var datas = [] as [Data]
+var datas = [] as [(Int,Int)]
 
 var start = 0
 for i in 0..<numberOfCores {
@@ -44,7 +53,7 @@ for i in 0..<numberOfCores {
     while (data[end] != newline) {
         end += 1
     }
-    datas.append(data.subdata(in: start..<end))
+    datas.append((start, end))
     start = end + 1
 }
 
@@ -52,16 +61,25 @@ let operationQueue = OperationQueue()
 
 for subdata in datas {
     operationQueue.addOperation {
-        var byCityThreaded = [[UInt8]: Statistic]()
+        var byCityThreaded = [DictionaryKey: Statistic]()
         
-        subdata.withUnsafeBytes { bytes in
+        data.withUnsafeBytes { fullPtr in
+            guard let subrangeStart = fullPtr.baseAddress?.advanced(by: subdata.0),
+                  subdata.1 <= fullPtr.count else {
+                fatalError("Subrange is out of bounds")
+            }
+            let bytes = UnsafeRawBufferPointer(start: subrangeStart, count: subdata.1 - subdata.0)
+
             var iterator = bytes.makeIterator()
+            var cityNameBytes = [] as [UInt8]
             while true {
-                var cityNameBytes = [] as [UInt8]
+                cityNameBytes.removeAll(keepingCapacity: true)
+                var cityNameHashCode = 0
                 while let byte = iterator.next()   {
                     if byte == semicolon {
                         break
-                    }
+                    }                    
+                    cityNameHashCode = (31 &* cityNameHashCode) &+ (Int(byte))
                     cityNameBytes.append(byte)
                 }
                 
@@ -89,7 +107,7 @@ for subdata in datas {
                 }
                 
                 let value = Float(cityValue * valueSign) / 10
-                let cityName = cityNameBytes
+                let cityName = DictionaryKey(hashValue: cityNameHashCode, bytes: cityNameBytes)
                 //byCityLock.withLock {
                 if let statistic = byCityThreaded[cityName] {
                     statistic.max = max(statistic.max, value);
@@ -101,16 +119,13 @@ for subdata in datas {
                 }
             }
             byCityLock.withLock {
-                for (cityName, value) in byCityThreaded {
-                    if let statistic = byCity[cityName] {
-                        statistic.max = max(statistic.max, value.max)
-                        statistic.min = min(statistic.min, value.min)
-                        statistic.count = statistic.count + value.count
-                        statistic.sum = statistic.sum + value.sum
-                    } else {
-                        byCity[cityName] = value
-                    }
-                }
+                byCity = byCity.merging(byCityThreaded, uniquingKeysWith: { statistic, statistic2 in
+                    statistic.max = max(statistic.max, statistic2.max)
+                    statistic.min = min(statistic.min, statistic2.min)
+                    statistic.count = statistic.count + statistic2.count
+                    statistic.sum = statistic.sum + statistic2.sum
+                    return statistic
+                })
             }
         }
     }
@@ -120,7 +135,7 @@ operationQueue.waitUntilAllOperationsAreFinished()
 
 print("All tasks completed")
 let output = byCity.keys.map({ data in
-    return (String(bytes: data, encoding: .utf8)!, data)
+    return (String(bytes: data.bytes, encoding: .utf8)!, data)
 }).sorted(by: { a, b in
     return a.0 < b.0
 }).map{ key in
