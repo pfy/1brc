@@ -77,7 +77,7 @@ let operationQueue = OperationQueue()
 
 for subdata in datas {
     operationQueue.addOperation {
-        let byCityThreaded = SimpleHashMap(capacity: 1024)
+        let byCityThreaded = SimpleHashMap(capacity: 10240)
         
         data.withUnsafeBytes { fullPtr in
             guard let subrangeStart = fullPtr.baseAddress?.advanced(by: subdata.0),
