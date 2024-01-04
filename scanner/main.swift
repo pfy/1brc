@@ -56,55 +56,55 @@ for subdata in datas {
         
         subdata.withUnsafeBytes { bytes in
             var iterator = bytes.makeIterator()
-        while true {
-            var cityNameBytes = [] as [UInt8]
-            while let byte = iterator.next()   {
-                if byte == semicolon {
-                    break
-                }
-                cityNameBytes.append(byte)
-            }
-            
-           // var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
-            var cityValue = 0 as Int
-            var valueSign = 1
-            if let byte = iterator.next() {
-                if byte == minus {
-                    valueSign = -1;
-                } else {
-                    cityValue = Int(byte - zero)
-                }
-            } else {
-                break
-            }
-            while let byte = iterator.next()  {
-                if byte == newline {
-                    break;
+            while true {
+                var cityNameBytes = [] as [UInt8]
+                while let byte = iterator.next()   {
+                    if byte == semicolon {
+                        break
+                    }
+                    cityNameBytes.append(byte)
                 }
                 
-                if (byte != point) {
-                    let val = byte - zero
-                    cityValue = cityValue * 10 + Int(val)
+                // var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
+                var cityValue = 0 as Int
+                var valueSign = 1
+                if let byte = iterator.next() {
+                    if byte == minus {
+                        valueSign = -1;
+                    } else {
+                        cityValue = Int(byte - zero)
+                    }
+                } else {
+                    break
+                }
+                while let byte = iterator.next()  {
+                    if byte == newline {
+                        break;
+                    }
+                    
+                    if (byte != point) {
+                        let val = byte - zero
+                        cityValue = cityValue * 10 + Int(val)
+                    }
+                }
+                
+                let value = Float(cityValue * valueSign) / 10
+                let cityName = cityNameBytes
+                //byCityLock.withLock {
+                if let statistic = byCityThreaded[cityName] {
+                    statistic.max = max(statistic.max, value);
+                    statistic.min = min(statistic.min, value);
+                    statistic.count += 1
+                    statistic.sum += value
+                } else {
+                    byCityThreaded[cityName] = Statistic(min: value, max: value, count: 1, sum: value)
                 }
             }
-            
-            let value = Float(cityValue * valueSign) / 10
-            let cityName = cityNameBytes
-            //byCityLock.withLock {
-            if let statistic = byCityThreaded[cityName] {
-                statistic.max = max(statistic.max, value);
-                statistic.min = min(statistic.min, value);
-                statistic.count += 1
-                statistic.sum += value
-            } else {
-                byCityThreaded[cityName] = Statistic(min: value, max: value, count: 1, sum: value)
-            }
-        }
             byCityLock.withLock {
                 for (cityName, value) in byCityThreaded {
                     if let statistic = byCity[cityName] {
                         statistic.max = max(statistic.max, value.max)
-                        statistic.min = min(statistic.max, value.max)
+                        statistic.min = min(statistic.min, value.min)
                         statistic.count = statistic.count + value.count
                         statistic.sum = statistic.sum + value.sum
                     } else {
