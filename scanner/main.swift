@@ -32,13 +32,18 @@ struct DictionaryKey: Hashable {
         }
     }
     static func == (lhs: Self, rhs: Self) -> Bool {
-        if rhs.hashValue != lhs.hashValue || rhs.cityName8Bytes != lhs.cityName8Bytes ||  lhs.bytes.count != rhs.bytes.count {
+        if rhs.hashValue != lhs.hashValue || rhs.cityName8Bytes != lhs.cityName8Bytes  {
             return false
         }
-        if rhs.bytes.count < 8 {
+        let rhsCount = rhs.bytes.count
+        let lhsCount = lhs.bytes.count
+        if (rhsCount != lhsCount) {
+            return false
+        }
+        if rhsCount < 8 {
             return true
         }
-        for i in 0..<(lhs.bytes.count - 8) {
+        for i in 0..<(rhsCount - 8) {
             if lhs.bytes[i] != rhs.bytes[i] {
                 return false
             }
@@ -73,8 +78,9 @@ let numberOfCores = ProcessInfo.processInfo.activeProcessorCount
 var datas = [] as [(Int,Int)]
 
 var start = 0
-for i in 0..<numberOfCores {
-    var end  =  data.count / numberOfCores * (i + 1)
+let splits = numberOfCores
+for i in 0..<splits {
+    var end  =  data.count / splits * (i + 1)
     while (data[end] != newline) {
         end += 1
     }
@@ -83,92 +89,93 @@ for i in 0..<numberOfCores {
 }
 
 let operationQueue = OperationQueue()
+operationQueue.qualityOfService = .userInitiated
+operationQueue.maxConcurrentOperationCount = numberOfCores
+func block(subdata: (Int,Int)) {
+    let byCityThreaded = SimpleHashMap(capacity: 10240)
+    
+    data.withUnsafeBytes { fullPtr in
+        guard let subrangeStart = fullPtr.baseAddress?.advanced(by: subdata.0),
+              subdata.1 <= fullPtr.count else {
+            fatalError("Subrange is out of bounds")
+        }
+        let bytes = UnsafeRawBufferPointer(start: subrangeStart, count: subdata.1 - subdata.0)
+        var pos = 0
+        var byte = bytes[pos]
 
-for subdata in datas {
-    operationQueue.addOperation {
-        let byCityThreaded = SimpleHashMap(capacity: 10240)
-        
-        data.withUnsafeBytes { fullPtr in
-            guard let subrangeStart = fullPtr.baseAddress?.advanced(by: subdata.0),
-                  subdata.1 <= fullPtr.count else {
-                fatalError("Subrange is out of bounds")
+        while pos < bytes.count {
+
+            var cityNameHashCode = FNV_offset_basis
+            var cityName8Bytes = 0 as UInt64
+            let cityNameStart = pos
+            
+            while  byte != semicolon  {
+                cityNameHashCode = (cityNameHashCode ^ Int(byte)) &* FNV_prime
+                cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
+                pos = pos &+ 1
+                byte = bytes[pos]
             }
-            let bytes = UnsafeRawBufferPointer(start: subrangeStart, count: subdata.1 - subdata.0)
-            let baseptr = bytes.baseAddress!
+            let cityNameBytes = UnsafeRawBufferPointer(start: bytes.baseAddress!.advanced(by: cityNameStart), count: pos - cityNameStart)
+            
+            pos = pos &+ 1
+            byte = bytes[pos]
 
-            var pos = 0
-            var byte = bytes[pos]
-
-            while pos < bytes.count {
-
-                var cityNameHashCode = FNV_offset_basis
-                var cityName8Bytes = 0 as UInt64
-                let cityNameStart = pos
-                var cityNameEnd = pos
-                
-                
-                while  byte != semicolon  {
-                    cityNameHashCode = (cityNameHashCode ^ Int(byte)) &* FNV_prime
-                    cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
-                    pos = pos &+ 1
-                    byte = bytes[pos]
-                }
-                cityNameEnd = pos
-                pos = pos &+ 1
-                byte = bytes[pos]
-
-                let cityNameBytes = UnsafeRawBufferPointer(start: baseptr.advanced(by: cityNameStart), count: cityNameEnd - cityNameStart)
-                /*var cityNameBytes = [UInt8](repeating: 0, count: cityNameEnd - cityNameStart)
-                cityNameBytes.withUnsafeMutableBytes { cityNameBytesPtr in
-                    cityNameBytesPtr.copyMemory(from: cityNamePtr)
-                }*/
-                
-                //var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
-                var cityValue = 0 as Int
-                var valueSign = 1
-                if true {
-                    if byte == minus {
-                        valueSign = -1;
-                    } else {
-                        cityValue = Int(byte - zero)
-                    }
-                }
-                pos = pos &+ 1
-                byte = bytes[pos]
-                while byte != newline  {
-
-                    if (byte != point) {
-                        let val = byte - zero
-                        cityValue = cityValue * 10 + Int(val)
-                    }
-                    pos = pos &+ 1
-                    byte = bytes[pos]
-                }
-                pos = pos &+ 1
-                byte = bytes[pos]
-                
-                let value = Float(cityValue * valueSign) / 10
-                let cityName = DictionaryKey(hashValue: cityNameHashCode, cityName8Bytes: cityName8Bytes, bytes: cityNameBytes)
-                let hashIndex = byCityThreaded.find(key: cityName)
-                if let statistic = byCityThreaded.valueAtIndex(index: hashIndex) {
-                    statistic.max = max(statistic.max, value);
-                    statistic.min = min(statistic.min, value);
-                    statistic.count += 1
-                    statistic.sum += value
+            /*var cityNameBytes = [UInt8](repeating: 0, count: cityNameEnd - cityNameStart)
+            cityNameBytes.withUnsafeMutableBytes { cityNameBytesPtr in
+                cityNameBytesPtr.copyMemory(from: cityNamePtr)
+            }*/
+            
+            //var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
+            var cityValue = 0 as Int
+            var valueSign = 1
+            if true {
+                if byte == minus {
+                    valueSign = -1;
                 } else {
-                    byCityThreaded.insertAtIndex(index: hashIndex, key: cityName, value: Statistic(min: value, max: value, count: 1, sum: value, name: cityNameBytes))
+                    cityValue = Int(byte - zero)
                 }
             }
-            byCityLock.withLock {
-                byCity = byCity.merging(byCityThreaded, uniquingKeysWith: { statistic, statistic2 in
-                    statistic.max = max(statistic.max, statistic2.max)
-                    statistic.min = min(statistic.min, statistic2.min)
-                    statistic.count = statistic.count + statistic2.count
-                    statistic.sum = statistic.sum + statistic2.sum
-                    return statistic
-                })
+            pos = pos &+ 1
+            byte = bytes[pos]
+            while byte != newline  {
+
+                if (byte != point) {
+                    let val = byte - zero
+                    cityValue = cityValue * 10 + Int(val)
+                }
+                pos = pos &+ 1
+                byte = bytes[pos]
+            }
+            pos = pos &+ 1
+            byte = bytes[pos]
+            let value = Float(cityValue * valueSign) / 10
+            
+            
+            let cityName = DictionaryKey(hashValue: cityNameHashCode, cityName8Bytes: cityName8Bytes, bytes: cityNameBytes)
+            let hashIndex = byCityThreaded.find(key: cityName)
+            if let statistic = byCityThreaded.valueAtIndex(index: hashIndex) {
+                statistic.max = max(statistic.max, value);
+                statistic.min = min(statistic.min, value);
+                statistic.count += 1
+                statistic.sum += value
+            } else {
+                byCityThreaded.insertAtIndex(index: hashIndex, key: cityName, value: Statistic(min: value, max: value, count: 1, sum: value, name: cityNameBytes))
             }
         }
+        byCityLock.withLock {
+            byCity = byCity.merging(byCityThreaded, uniquingKeysWith: { statistic, statistic2 in
+                statistic.max = max(statistic.max, statistic2.max)
+                statistic.min = min(statistic.min, statistic2.min)
+                statistic.count = statistic.count + statistic2.count
+                statistic.sum = statistic.sum + statistic2.sum
+                return statistic
+            })
+        }
+    }
+}
+for subdata in datas {
+    operationQueue.addOperation {
+      block(subdata: subdata)
     }
 }
 
