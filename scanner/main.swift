@@ -53,10 +53,10 @@ struct DictionaryKey: Hashable {
 }
 
 /*let tst = SimpleHashMap(capacity: 10)
-tst[DictionaryKey(hashValue: 123, bytes: [0xff,0xff])] = Statistic(min: 0, max: 0, count: 0, sum: 0, name: [0xff,0xff])
-for elem in tst {
-    print(elem)
-}*/
+ tst[DictionaryKey(hashValue: 123, bytes: [0xff,0xff])] = Statistic(min: 0, max: 0, count: 0, sum: 0, name: [0xff,0xff])
+ for elem in tst {
+ print(elem)
+ }*/
 
 
 let path = "/Users/pfy/Devel/1brc/measurements.txt"
@@ -102,30 +102,56 @@ func block(subdata: (Int,Int)) {
         let bytes = UnsafeRawBufferPointer(start: subrangeStart, count: subdata.1 - subdata.0)
         var pos = 0
         var byte = bytes[pos]
-
+        
         while pos < bytes.count {
-
+            
             var cityNameHashCode = FNV_offset_basis
             var cityName8Bytes = 0 as UInt64
             let cityNameStart = pos
             
             while byte != semicolon  {
-                let byteCopy = byte
+                var byteCopy = byte
                 pos = pos &+ 1
                 byte = bytes[pos]
                 cityNameHashCode = (cityNameHashCode ^ Int(byteCopy)) &* FNV_prime
                 cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
-
+                if (byteCopy == semicolon) {
+                    break
+                }
+                byteCopy = byte
+                pos = pos &+ 1
+                byte = bytes[pos]
+                cityNameHashCode = (cityNameHashCode ^ Int(byteCopy)) &* FNV_prime
+                cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
+                if (byteCopy == semicolon) {
+                    break
+                }
+                byteCopy = byte
+                pos = pos &+ 1
+                byte = bytes[pos]
+                cityNameHashCode = (cityNameHashCode ^ Int(byteCopy)) &* FNV_prime
+                cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
+                if (byteCopy == semicolon) {
+                    break
+                }
+                byteCopy = byte
+                pos = pos &+ 1
+                byte = bytes[pos]
+                cityNameHashCode = (cityNameHashCode ^ Int(byteCopy)) &* FNV_prime
+                cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
+                if (byteCopy == semicolon) {
+                    break
+                }
             }
             let cityNameBytes = UnsafeRawBufferPointer(start: bytes.baseAddress!.advanced(by: cityNameStart), count: pos - cityNameStart)
             
             pos = pos &+ 1
             byte = bytes[pos]
-
+            
             /*var cityNameBytes = [UInt8](repeating: 0, count: cityNameEnd - cityNameStart)
-            cityNameBytes.withUnsafeMutableBytes { cityNameBytesPtr in
-                cityNameBytesPtr.copyMemory(from: cityNamePtr)
-            }*/
+             cityNameBytes.withUnsafeMutableBytes { cityNameBytesPtr in
+             cityNameBytesPtr.copyMemory(from: cityNamePtr)
+             }*/
             
             //var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
             var cityValue = 0 as Int
@@ -147,7 +173,7 @@ func block(subdata: (Int,Int)) {
                     let val = byteCopy - zero
                     cityValue = cityValue * 10 + Int(val)
                 }
-          
+                
             }
             pos = pos &+ 1
             byte = bytes[pos]
@@ -178,7 +204,7 @@ func block(subdata: (Int,Int)) {
 }
 for subdata in datas {
     operationQueue.addOperation {
-      block(subdata: subdata)
+        block(subdata: subdata)
     }
 }
 
@@ -212,12 +238,12 @@ class SimpleHashMap:  Collection, Sequence {
     var startIndex: Int { return index(after: -1) }
     var endIndex: Int   { return _capacity }
     subscript(index: Int) -> Element {
-           return (_keys[index]!,_values[index]!)
+        return (_keys[index]!,_values[index]!)
     }
     
     typealias Element = (DictionaryKey, Statistic)
-
-
+    
+    
     init(capacity: Int) {
         let numberOfBits = Int(floor(log2(Double(capacity + 1))))
         _capcityMask = (1 << numberOfBits) - 1
@@ -227,17 +253,17 @@ class SimpleHashMap:  Collection, Sequence {
     }
     @inlinable subscript(key: DictionaryKey) -> Statistic? {
         get {
-             let index = find(key: key)
+            let index = find(key: key)
             return _values[index]
             
         }
         set {
             let index = find(key: key)
-                _values[index] = newValue
-                _keys[index] = key
+            _values[index] = newValue
+            _keys[index] = key
         }
     }
-
+    
     @inlinable func find(key: DictionaryKey) -> Int {
         let hash = key.hashValue & _capcityMask
         var distance = 1
@@ -256,7 +282,7 @@ class SimpleHashMap:  Collection, Sequence {
         _keys[index] = key
     }
     
-  
+    
     
 }
 
