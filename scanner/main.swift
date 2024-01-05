@@ -89,8 +89,8 @@ for i in 0..<splits {
 }
 
 let operationQueue = OperationQueue()
-operationQueue.qualityOfService = .userInitiated
-operationQueue.maxConcurrentOperationCount = numberOfCores
+
+
 func block(subdata: (Int,Int)) {
     let byCityThreaded = SimpleHashMap(capacity: 10240)
     
@@ -219,7 +219,7 @@ class SimpleHashMap:  Collection, Sequence {
         _values = Array(repeating: nil, count: capacity)
         _keys = Array(repeating: nil, count: capacity)
     }
-    subscript(key: DictionaryKey) -> Statistic? { 
+    @inlinable subscript(key: DictionaryKey) -> Statistic? { 
         get {
              let index = find(key: key)
             return _values[index]
@@ -232,7 +232,7 @@ class SimpleHashMap:  Collection, Sequence {
         }
     }
 
-    func find(key: DictionaryKey) -> Int {
+    @inlinable func find(key: DictionaryKey) -> Int {
         let hash = (key.hashValue % _capacity + _capacity) % _capacity
         var distance = 1
         var index = hash
@@ -242,10 +242,10 @@ class SimpleHashMap:  Collection, Sequence {
         }
         return index
     }
-    func valueAtIndex(index: Int) -> Statistic? {
+    @inlinable func valueAtIndex(index: Int) -> Statistic? {
         return _values[index]
     }
-    func insertAtIndex(index: Int, key: DictionaryKey, value: Statistic) {
+    @inlinable func insertAtIndex(index: Int, key: DictionaryKey, value: Statistic) {
         _values[index] = value
         _keys[index] = key
     }
