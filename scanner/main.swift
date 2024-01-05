@@ -94,30 +94,26 @@ for subdata in datas {
                 fatalError("Subrange is out of bounds")
             }
             let bytes = UnsafeRawBufferPointer(start: subrangeStart, count: subdata.1 - subdata.0)
-            let baseptr = bytes.baseAddress!
 
             var pos = 0
-            var byte = bytes[pos]
-
             while pos < bytes.count {
 
                 var cityNameHashCode = FNV_offset_basis
                 var cityName8Bytes = 0 as UInt64
                 let cityNameStart = pos
                 var cityNameEnd = pos
-                
-                
-                while  byte != semicolon  {
+                while  true  {
+                    let byte = bytes[pos]
+                    if byte == semicolon {
+                        cityNameEnd = pos
+                        pos = pos &+ 1
+                        break
+                    } 
+                    pos = pos &+ 1
                     cityNameHashCode = (cityNameHashCode ^ Int(byte)) &* FNV_prime
                     cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
-                    pos = pos &+ 1
-                    byte = bytes[pos]
                 }
-                cityNameEnd = pos
-                pos = pos &+ 1
-                byte = bytes[pos]
-
-                let cityNameBytes = UnsafeRawBufferPointer(start: baseptr.advanced(by: cityNameStart), count: cityNameEnd - cityNameStart)
+                let cityNameBytes = UnsafeRawBufferPointer(start: bytes.baseAddress?.advanced(by: cityNameStart), count: cityNameEnd - cityNameStart)
                 /*var cityNameBytes = [UInt8](repeating: 0, count: cityNameEnd - cityNameStart)
                 cityNameBytes.withUnsafeMutableBytes { cityNameBytesPtr in
                     cityNameBytesPtr.copyMemory(from: cityNamePtr)
@@ -127,25 +123,26 @@ for subdata in datas {
                 var cityValue = 0 as Int
                 var valueSign = 1
                 if true {
+                    let byte = bytes[pos]
+                    pos = pos &+ 1
                     if byte == minus {
                         valueSign = -1;
                     } else {
                         cityValue = Int(byte - zero)
                     }
                 }
-                pos = pos &+ 1
-                byte = bytes[pos]
-                while byte != newline  {
-
+                while true  {
+                    let byte = bytes[pos]
+                    pos = pos &+ 1
+                    if byte == newline {
+                        break;
+                    }
+                    
                     if (byte != point) {
                         let val = byte - zero
                         cityValue = cityValue * 10 + Int(val)
                     }
-                    pos = pos &+ 1
-                    byte = bytes[pos]
                 }
-                pos = pos &+ 1
-                byte = bytes[pos]
                 
                 let value = Float(cityValue * valueSign) / 10
                 let cityName = DictionaryKey(hashValue: cityNameHashCode, cityName8Bytes: cityName8Bytes, bytes: cityNameBytes)
