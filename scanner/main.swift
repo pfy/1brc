@@ -12,8 +12,8 @@ class Statistic {
     var max: Float;
     var count: Int;
     var sum: Float;
-    let name: [UInt8]
-    init(min: Float, max: Float, count: Int, sum: Float, name: [UInt8]) {
+    let name: UnsafeRawBufferPointer
+    init(min: Float, max: Float, count: Int, sum: Float, name: UnsafeRawBufferPointer) {
         self.min = min
         self.max = max
         self.count = count
@@ -24,17 +24,25 @@ class Statistic {
 
 struct DictionaryKey: Hashable {
     let hashValue: Int
-    let bytes: [UInt8]
+    let bytes: UnsafeRawBufferPointer
     func hash(into hasher: inout Hasher) {
         withUnsafeBytes(of: hashValue) { rawBytes in
             hasher.combine(bytes: rawBytes)
         }
     }
     static func == (lhs: Self, rhs: Self) -> Bool {
-        if rhs.hashValue == lhs.hashValue && lhs.bytes.count == rhs.bytes.count && rhs.bytes.count < 8 {
+        if rhs.hashValue != lhs.hashValue || lhs.bytes.count != rhs.bytes.count {
+            return false
+        }
+        if rhs.bytes.count < 8 {
             return true
         }
-        return lhs.bytes == rhs.bytes
+        for i in 8..<lhs.bytes.count {
+            if lhs.bytes[i] != rhs.bytes[i] {
+                return false
+            }
+        }
+        return true
     }
 }
 
@@ -86,34 +94,41 @@ for subdata in datas {
             }
             let bytes = UnsafeRawBufferPointer(start: subrangeStart, count: subdata.1 - subdata.0)
 
-            var iterator = bytes.makeIterator()
-            var cityNameBytes = [] as [UInt8]
-            while true {
-                cityNameBytes.removeAll(keepingCapacity: true)
+            var pos = 0
+            while pos < bytes.count {
 
                 var cityNameHashCode = FNV_offset_basis
-                while let byte = iterator.next()   {
+                let cityNameStart = pos
+                while  true  {
+                    let byte = bytes[pos]
+                    pos+=1
                     if byte == semicolon {
-                 
                         break
                     }                    
                     cityNameHashCode = (cityNameHashCode ^ Int(byte)) &* FNV_prime
-                    cityNameBytes.append(byte)
                 }
+                let cityNameEnd = pos-1
+                let cityNameBytes = UnsafeRawBufferPointer(start: bytes.baseAddress?.advanced(by: cityNameStart), count: cityNameEnd - cityNameStart)
+                /*var cityNameBytes = [UInt8](repeating: 0, count: cityNameEnd - cityNameStart)
+                cityNameBytes.withUnsafeMutableBytes { cityNameBytesPtr in
+                    cityNameBytesPtr.copyMemory(from: cityNamePtr)
+                }*/
                 
-                // var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
+                //var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
                 var cityValue = 0 as Int
                 var valueSign = 1
-                if let byte = iterator.next() {
+                if true {
+                    let byte = bytes[pos]
+                    pos+=1
                     if byte == minus {
                         valueSign = -1;
                     } else {
                         cityValue = Int(byte - zero)
                     }
-                } else {
-                    break
                 }
-                while let byte = iterator.next()  {
+                while true  {
+                    let byte = bytes[pos]
+                    pos+=1
                     if byte == newline {
                         break;
                     }
@@ -199,8 +214,6 @@ class SimpleHashMap:  Collection, Sequence {
             let index = find(key: key)
                 _values[index] = newValue
                 _keys[index] = key
-
-            
         }
     }
 
