@@ -198,6 +198,7 @@ class SimpleHashMap:  Collection, Sequence {
     private var _values: [Statistic?]
     private var _keys: [DictionaryKey?]
     private var _capacity: Int
+    private var _capcityMask: Int
     func index(after i: Int) -> Int {
         var n = i+1
         while n < _keys.count &&  _keys[n] == nil && n < _capacity {
@@ -215,11 +216,13 @@ class SimpleHashMap:  Collection, Sequence {
 
 
     init(capacity: Int) {
+        let numberOfBits = Int(floor(log2(Double(capacity + 1))))
+        _capcityMask = (1 << numberOfBits) - 1
         _capacity = capacity
         _values = Array(repeating: nil, count: capacity)
         _keys = Array(repeating: nil, count: capacity)
     }
-    @inlinable subscript(key: DictionaryKey) -> Statistic? { 
+    @inlinable subscript(key: DictionaryKey) -> Statistic? {
         get {
              let index = find(key: key)
             return _values[index]
@@ -233,11 +236,11 @@ class SimpleHashMap:  Collection, Sequence {
     }
 
     @inlinable func find(key: DictionaryKey) -> Int {
-        let hash = (key.hashValue % _capacity + _capacity) % _capacity
+        let hash = key.hashValue & _capcityMask
         var distance = 1
         var index = hash
         while _keys[index] != nil && _keys[index] != key {
-            index = (index + distance) % _capacity
+            index = (index + distance) & _capcityMask
             distance = distance * 2
         }
         return index
