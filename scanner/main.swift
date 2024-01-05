@@ -101,16 +101,18 @@ for subdata in datas {
                 var cityNameHashCode = FNV_offset_basis
                 var cityName8Bytes = 0 as UInt64
                 let cityNameStart = pos
+                var cityNameEnd = pos
                 while  true  {
                     let byte = bytes[pos]
-                    pos+=1
                     if byte == semicolon {
+                        cityNameEnd = pos
+                        pos = pos &+ 1
                         break
-                    }         
+                    } 
+                    pos = pos &+ 1
                     cityNameHashCode = (cityNameHashCode ^ Int(byte)) &* FNV_prime
                     cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
                 }
-                let cityNameEnd = pos-1
                 let cityNameBytes = UnsafeRawBufferPointer(start: bytes.baseAddress?.advanced(by: cityNameStart), count: cityNameEnd - cityNameStart)
                 /*var cityNameBytes = [UInt8](repeating: 0, count: cityNameEnd - cityNameStart)
                 cityNameBytes.withUnsafeMutableBytes { cityNameBytesPtr in
@@ -122,7 +124,7 @@ for subdata in datas {
                 var valueSign = 1
                 if true {
                     let byte = bytes[pos]
-                    pos+=1
+                    pos = pos &+ 1
                     if byte == minus {
                         valueSign = -1;
                     } else {
@@ -131,7 +133,7 @@ for subdata in datas {
                 }
                 while true  {
                     let byte = bytes[pos]
-                    pos+=1
+                    pos = pos &+ 1
                     if byte == newline {
                         break;
                     }
