@@ -109,11 +109,13 @@ func block(subdata: (Int,Int)) {
             var cityName8Bytes = 0 as UInt64
             let cityNameStart = pos
             
-            while  byte != semicolon  {
-                cityNameHashCode = (cityNameHashCode ^ Int(byte)) &* FNV_prime
-                cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
+            while byte != semicolon  {
+                let byteCopy = byte
                 pos = pos &+ 1
                 byte = bytes[pos]
+                cityNameHashCode = (cityNameHashCode ^ Int(byteCopy)) &* FNV_prime
+                cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
+
             }
             let cityNameBytes = UnsafeRawBufferPointer(start: bytes.baseAddress!.advanced(by: cityNameStart), count: pos - cityNameStart)
             
@@ -138,13 +140,14 @@ func block(subdata: (Int,Int)) {
             pos = pos &+ 1
             byte = bytes[pos]
             while byte != newline  {
-
-                if (byte != point) {
-                    let val = byte - zero
-                    cityValue = cityValue * 10 + Int(val)
-                }
+                let byteCopy = byte
                 pos = pos &+ 1
                 byte = bytes[pos]
+                if (byteCopy != point) {
+                    let val = byteCopy - zero
+                    cityValue = cityValue * 10 + Int(val)
+                }
+          
             }
             pos = pos &+ 1
             byte = bytes[pos]

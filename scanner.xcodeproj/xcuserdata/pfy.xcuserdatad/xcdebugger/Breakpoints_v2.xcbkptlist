@@ -14,10 +14,10 @@
             filePath = "scanner/main.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "211"
-            endingLineNumber = "211"
-            landmarkName = "subscript(index:)"
-            landmarkType = "7">
+            startingLineNumber = "214"
+            endingLineNumber = "214"
+            landmarkName = "endIndex"
+            landmarkType = "24">
             <Locations>
                <Location
                   uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - f725891de195667b"
