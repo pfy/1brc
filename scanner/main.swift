@@ -24,6 +24,7 @@ class Statistic {
 
 struct DictionaryKey: Hashable {
     let hashValue: Int
+    let cityName8Bytes: UInt64
     let bytes: UnsafeRawBufferPointer
     func hash(into hasher: inout Hasher) {
         withUnsafeBytes(of: hashValue) { rawBytes in
@@ -31,13 +32,13 @@ struct DictionaryKey: Hashable {
         }
     }
     static func == (lhs: Self, rhs: Self) -> Bool {
-        if rhs.hashValue != lhs.hashValue || lhs.bytes.count != rhs.bytes.count {
+        if rhs.hashValue != lhs.hashValue || rhs.cityName8Bytes != lhs.cityName8Bytes ||  lhs.bytes.count != rhs.bytes.count {
             return false
         }
         if rhs.bytes.count < 8 {
             return true
         }
-        for i in 8..<lhs.bytes.count {
+        for i in 0..<(lhs.bytes.count - 8) {
             if lhs.bytes[i] != rhs.bytes[i] {
                 return false
             }
@@ -98,14 +99,16 @@ for subdata in datas {
             while pos < bytes.count {
 
                 var cityNameHashCode = FNV_offset_basis
+                var cityName8Bytes = 0 as UInt64
                 let cityNameStart = pos
                 while  true  {
                     let byte = bytes[pos]
                     pos+=1
                     if byte == semicolon {
                         break
-                    }                    
+                    }         
                     cityNameHashCode = (cityNameHashCode ^ Int(byte)) &* FNV_prime
+                    cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
                 }
                 let cityNameEnd = pos-1
                 let cityNameBytes = UnsafeRawBufferPointer(start: bytes.baseAddress?.advanced(by: cityNameStart), count: cityNameEnd - cityNameStart)
@@ -140,15 +143,15 @@ for subdata in datas {
                 }
                 
                 let value = Float(cityValue * valueSign) / 10
-                let cityName = DictionaryKey(hashValue: cityNameHashCode, bytes: cityNameBytes)
-                //byCityLock.withLock {
-                if let statistic = byCityThreaded[cityName] {
+                let cityName = DictionaryKey(hashValue: cityNameHashCode, cityName8Bytes: cityName8Bytes, bytes: cityNameBytes)
+                let hashIndex = byCityThreaded.find(key: cityName)
+                if let statistic = byCityThreaded.valueAtIndex(index: hashIndex) {
                     statistic.max = max(statistic.max, value);
                     statistic.min = min(statistic.min, value);
                     statistic.count += 1
                     statistic.sum += value
                 } else {
-                    byCityThreaded[cityName] = Statistic(min: value, max: value, count: 1, sum: value, name: cityNameBytes)
+                    byCityThreaded.insertAtIndex(index: hashIndex, key: cityName, value: Statistic(min: value, max: value, count: 1, sum: value, name: cityNameBytes))
                 }
             }
             byCityLock.withLock {
@@ -227,6 +230,14 @@ class SimpleHashMap:  Collection, Sequence {
         }
         return index
     }
+    func valueAtIndex(index: Int) -> Statistic? {
+        return _values[index]
+    }
+    func insertAtIndex(index: Int, key: DictionaryKey, value: Statistic) {
+        _values[index] = value
+        _keys[index] = key
+    }
+    
   
     
 }
