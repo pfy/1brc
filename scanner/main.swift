@@ -80,7 +80,10 @@ var datas = [] as [(Int,Int)]
 var start = 0
 let splits = numberOfCores
 for i in 0..<splits {
-    let end  =  data.count / splits * (i + 1)
+    var end  =  data.count / splits * (i + 1)
+    while (data[end] != newline) {
+        end += 1
+    }
     datas.append((start, end))
     start = end + 1
 }
@@ -92,23 +95,11 @@ func block(subdata: (Int,Int)) {
     let byCityThreaded = SimpleHashMap(capacity: 10240)
     
     data.withUnsafeBytes { fullPtr in
-        var start = subdata.0
-        var end = subdata.1
-        while (fullPtr[end] != newline) {
-            end += 1
-        }
-        if (start != 0) {
-            while (fullPtr[start] != newline) {
-                start += 1
-            }
-            start += 1
-        }
-        
-        guard let subrangeStart = fullPtr.baseAddress?.advanced(by: start),
-              end <= fullPtr.count else {
+        guard let subrangeStart = fullPtr.baseAddress?.advanced(by: subdata.0),
+              subdata.1 <= fullPtr.count else {
             fatalError("Subrange is out of bounds")
         }
-        let bytes = UnsafeRawBufferPointer(start: subrangeStart, count: end - start)
+        let bytes = UnsafeRawBufferPointer(start: subrangeStart, count: subdata.1 - subdata.0)
         var pos = 0
         var byte = bytes[pos]
         
