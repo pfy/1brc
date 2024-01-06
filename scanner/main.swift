@@ -80,7 +80,7 @@ var datas = [] as [(Int,Int)]
 var start = 0
 let splits = numberOfCores
 for i in 0..<splits {
-    var end  =  data.count / splits * (i + 1)
+    var end  =  data.count / splits * (i + 1) - 1
     while (data[end] != newline) {
         end += 1
     }
