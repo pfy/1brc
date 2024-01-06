@@ -80,10 +80,7 @@ var datas = [] as [(Int,Int)]
 var start = 0
 let splits = numberOfCores
 for i in 0..<splits {
-    var end  =  data.count / splits * (i + 1)
-    while (data[end] != newline) {
-        end += 1
-    }
+    let end  =  data.count / splits * (i + 1)
     datas.append((start, end))
     start = end + 1
 }
@@ -95,11 +92,23 @@ func block(subdata: (Int,Int)) {
     let byCityThreaded = SimpleHashMap(capacity: 10240)
     
     data.withUnsafeBytes { fullPtr in
-        guard let subrangeStart = fullPtr.baseAddress?.advanced(by: subdata.0),
-              subdata.1 <= fullPtr.count else {
+        var start = subdata.0
+        var end = subdata.1
+        while (fullPtr[end] != newline) {
+            end += 1
+        }
+        if (start != 0) {
+            while (fullPtr[start] != newline) {
+                start += 1
+            }
+            start += 1
+        }
+        
+        guard let subrangeStart = fullPtr.baseAddress?.advanced(by: start),
+              end <= fullPtr.count else {
             fatalError("Subrange is out of bounds")
         }
-        let bytes = UnsafeRawBufferPointer(start: subrangeStart, count: subdata.1 - subdata.0)
+        let bytes = UnsafeRawBufferPointer(start: subrangeStart, count: end - start)
         var pos = 0
         var byte = bytes[pos]
         
@@ -115,7 +124,7 @@ func block(subdata: (Int,Int)) {
                 byte = bytes[pos]
                 cityNameHashCode = (cityNameHashCode ^ Int(byteCopy)) &* FNV_prime
                 cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
-                if (byteCopy == semicolon) {
+                if byte == semicolon {
                     break
                 }
                 byteCopy = byte
@@ -123,7 +132,7 @@ func block(subdata: (Int,Int)) {
                 byte = bytes[pos]
                 cityNameHashCode = (cityNameHashCode ^ Int(byteCopy)) &* FNV_prime
                 cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
-                if (byteCopy == semicolon) {
+                if byte == semicolon {
                     break
                 }
                 byteCopy = byte
@@ -131,7 +140,7 @@ func block(subdata: (Int,Int)) {
                 byte = bytes[pos]
                 cityNameHashCode = (cityNameHashCode ^ Int(byteCopy)) &* FNV_prime
                 cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
-                if (byteCopy == semicolon) {
+                if byte == semicolon {
                     break
                 }
                 byteCopy = byte
@@ -139,9 +148,6 @@ func block(subdata: (Int,Int)) {
                 byte = bytes[pos]
                 cityNameHashCode = (cityNameHashCode ^ Int(byteCopy)) &* FNV_prime
                 cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
-                if (byteCopy == semicolon) {
-                    break
-                }
             }
             let cityNameBytes = UnsafeRawBufferPointer(start: bytes.baseAddress!.advanced(by: cityNameStart), count: pos - cityNameStart)
             
@@ -153,7 +159,7 @@ func block(subdata: (Int,Int)) {
              cityNameBytesPtr.copyMemory(from: cityNamePtr)
              }*/
             
-            //var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
+           // var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
             var cityValue = 0 as Int
             var valueSign = 1
             if true {

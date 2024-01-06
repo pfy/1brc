@@ -14,192 +14,73 @@
             filePath = "scanner/main.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "240"
-            endingLineNumber = "240"
-            landmarkName = "subscript(index:)"
+            startingLineNumber = "266"
+            endingLineNumber = "266"
+            landmarkName = "subscript(key:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - f725891de195667b"
+                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - 32e0435a103d1714"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.index(after: Swift.Int) -&gt; Swift.Int"
+                  symbolName = "scanner.SimpleHashMap.subscript.getter : (scanner.DictionaryKey) -&gt; Swift.Optional&lt;scanner.Statistic&gt;"
                   moduleName = "scanner"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "173"
-                  endingLineNumber = "173"
-                  offsetFromSymbolStart = "828">
+                  startingLineNumber = "266"
+                  endingLineNumber = "266"
+                  offsetFromSymbolStart = "88">
                </Location>
                <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - f725891de195667b"
+                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - 32e0435a103d1222"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.index(after: Swift.Int) -&gt; Swift.Int"
+                  symbolName = "scanner.SimpleHashMap.subscript.setter : (scanner.DictionaryKey) -&gt; Swift.Optional&lt;scanner.Statistic&gt;"
                   moduleName = "scanner"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "173"
-                  endingLineNumber = "173"
-                  offsetFromSymbolStart = "68">
+                  startingLineNumber = "244"
+                  endingLineNumber = "244"
+                  offsetFromSymbolStart = "112">
                </Location>
                <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - 294173c1030941ef"
+                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - 32e0435a103d1688"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.startIndex.getter : Swift.Int"
+                  symbolName = "scanner.SimpleHashMap.subscript.setter : (scanner.DictionaryKey) -&gt; Swift.Optional&lt;scanner.Statistic&gt;"
                   moduleName = "scanner"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "181"
-                  endingLineNumber = "181"
-                  offsetFromSymbolStart = "24">
-               </Location>
-               <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - 294173c10309466b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.startIndex.getter : Swift.Int"
-                  moduleName = "scanner"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "185"
-                  endingLineNumber = "185"
-                  offsetFromSymbolStart = "24">
-               </Location>
-               <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - 294173c103094753"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.startIndex.getter : Swift.Int"
-                  moduleName = "scanner"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "193"
-                  endingLineNumber = "193"
-                  offsetFromSymbolStart = "24">
-               </Location>
-               <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - 294173c103094478"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.startIndex.getter : Swift.Int"
-                  moduleName = "scanner"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "200"
-                  endingLineNumber = "200"
-                  offsetFromSymbolStart = "24">
-               </Location>
-               <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - 294173c1030944c7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.startIndex.getter : Swift.Int"
-                  moduleName = "scanner"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "205"
-                  endingLineNumber = "205"
-                  offsetFromSymbolStart = "24">
-               </Location>
-               <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - e33e43b5e4f758c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.subscript.getter : (Swift.Int) -&gt; (scanner.DictionaryKey, scanner.Statistic)"
-                  moduleName = "scanner"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "211"
-                  endingLineNumber = "211"
-                  offsetFromSymbolStart = "84">
-               </Location>
-               <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - b58fe5f30f5e4a10"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.subscript.read : (Swift.Int) -&gt; (scanner.DictionaryKey, scanner.Statistic)"
-                  moduleName = "scanner"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "210"
-                  endingLineNumber = "210"
-                  offsetFromSymbolStart = "0">
-               </Location>
-               <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - 6e4d16053b3bdd1"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.subscript.read : (Swift.Int) -&gt; (scanner.DictionaryKey, scanner.Statistic) with unmangled suffix &quot;.resume.0&quot;"
-                  moduleName = "scanner"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pfy/Devel/1brc/scanner/%3Ccompiler-generated%3E"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "0"
-                  endingLineNumber = "0"
-                  offsetFromSymbolStart = "16">
-               </Location>
-               <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - e33e43b5e4f8a08"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.subscript.getter : (Swift.Int) -&gt; (scanner.DictionaryKey, scanner.Statistic)"
-                  moduleName = "scanner"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "215"
-                  endingLineNumber = "215"
-                  offsetFromSymbolStart = "84">
-               </Location>
-               <Location
-                  uuid = "D3860192-D27C-4096-AEF6-055926F5D56C - b58fe5f30f5eb59c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "scanner.SimpleHashMap.subscript.read : (Swift.Int) -&gt; (scanner.DictionaryKey, scanner.Statistic)"
-                  moduleName = "scanner"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pfy/Devel/1brc/scanner/scanner/main.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "214"
-                  endingLineNumber = "214"
-                  offsetFromSymbolStart = "0">
+                  startingLineNumber = "270"
+                  endingLineNumber = "270"
+                  offsetFromSymbolStart = "112">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "13528665-3D91-4CBD-9749-84097E00541A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "scanner/main.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "164"
+            endingLineNumber = "164"
+            landmarkName = "block(subdata:)"
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
