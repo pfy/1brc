@@ -94,16 +94,13 @@ let operationQueue = OperationQueue()
 func block(subdata: (Int,Int)) {
     let byCityThreaded = SimpleHashMap(capacity: 10240)
     
-    data.withUnsafeBytes { fullPtr in
-        guard let subrangeStart = fullPtr.baseAddress?.advanced(by: subdata.0),
-              subdata.1 <= fullPtr.count else {
-            fatalError("Subrange is out of bounds")
-        }
-        let bytes = UnsafeRawBufferPointer(start: subrangeStart, count: subdata.1 - subdata.0)
-        var pos = 0
+    data.withUnsafeBytes { bytes in
+        
+        var pos = subdata.0
+        let end = subdata.1
         var byte = bytes[pos]
         
-        while pos < bytes.count {
+        while pos < end {
             
             var cityNameHashCode = FNV_offset_basis
             var cityName8Bytes = 0 as UInt64
