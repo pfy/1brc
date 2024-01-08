@@ -13,7 +13,7 @@ The idea is the following:
 6. find the semicolon, while accumulating a byte containing the first 8 bytes of the name
 7. still finding the semicolon, after 8 bytes only calculate the hash
 8. use a pointer to the city name, do not copy anything
-9. after the semicolon, get the sign or the first number. the number is stored as int
+9. after the semicolon, get the sign or the first number. the number is stored as int * 10. use the number parsing logic from https://github.com/dannyvankooten/1brc/blob/main/analyze.c#L39
 10. accumulate numbers until we reach a newline, ignoring the point since the test datas always have one number after the point
 11.  generate a key, containing our hash as Int (Hashable needs an int ..)
 12. find or update the statistics element for the city in our special hash. use the find function to get an index
@@ -39,7 +39,7 @@ We use a special hashmap, which
       Memory: 64 GB
 ```
 ```
-./scanner measurements.txt  18.39s user 1.35s system 805% cpu 2.450 total
+./scanner measurements.txt  17.53s user 1.36s system 796% cpu 2.371 total
 ```
 
 ### on a mac studio

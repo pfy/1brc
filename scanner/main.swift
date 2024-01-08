@@ -18,6 +18,8 @@ let path = arguments[1]
 let newline = "\n".data(using: .utf8)![0]
 let semicolon = ";".data(using: .utf8)![0]
 let zero = "0".data(using: .utf8)![0]
+let zero11 = 11 * Int(zero)
+let zero111 = 111 * Int(zero)
 let point = ".".data(using: .utf8)![0]
 let minus = "-".data(using: .utf8)![0]
 let hash_offset_basis =   5381 as UInt64
@@ -87,30 +89,29 @@ func block(subdata: (Int,Int)) {
             byte = bytes[pos]
             
             // debug: to read the current string
-            //var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
+        //    var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
             var cityValue = 0 as Int
             var valueSign = 1
             
             // 9: get the sign or the first number. the number is stored as int
             if byte == minus {
                 valueSign = -1;
-            } else {
-                cityValue = Int(byte - zero)
+                pos = pos &+ 1
             }
             
-            // 10: accumulate numbers until we reach a newline, ignoring the point since the test datas always have one number after the point
-            pos = pos &+ 1
-            byte = bytes[pos]
-            while byte != newline  {
-                if (byte != point) {
-                    let val = byte - zero
-                    cityValue = cityValue * 10 + Int(val)
-                }
-                pos = pos &+ 1
-                byte = bytes[pos]
+            // fancy number parsing, from https://github.com/dannyvankooten/1brc/blob/main/analyze.c#L39
+            
+            // 1.2\n
+            if bytes[pos+1] == point {
+                cityValue =  Int(bytes[pos]) * 10 + Int(bytes[pos + 2]) - zero11
+                pos = pos &+ 4
+            } else {
+                // 22.3\n
+               cityValue = Int(bytes[pos]) * 100 + Int(bytes[pos+1]) * 10 + Int(bytes[pos + 3]) - zero111
+                pos = pos &+ 5
             }
-            pos = pos &+ 1
             byte = bytes[pos]
+            
             let value = cityValue * valueSign
             // 11: generate a key, containing our hash as Int (Hashable needs an int ..)
             let cityNameHashCodeInt = withUnsafeBytes(of: cityNameHashCode) {$0.load(as: Int.self)}
