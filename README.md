@@ -21,3 +21,32 @@ The idea is the following:
 We use a special hashmap, which
 * can use a predefined hash value
 * can get us the index of a key or the next free element and supports insert by index
+
+
+## Results
+(after warm, best of 3)
+### on my m1 pro laptop
+```
+      Model Name: MacBook Pro
+      Model Identifier: MacBookPro18,2
+      Model Number: Z14Y0007KSM/A
+      Chip: Apple M1 Max
+      Total Number of Cores: 10 (8 performance and 2 efficiency)
+      Memory: 64 GB
+```
+```
+./scanner measurements.txt  18.39s user 1.35s system 805% cpu 2.450 total
+```
+
+### on a mac studio
+```
+      Model Name: Mac Studio
+      Model Identifier: Mac13,2
+      Model Number: Z14K0002CSM/A
+      Chip: Apple M1 Ultra
+      Total Number of Cores: 20 (16 performance and 4 efficiency)
+      Memory: 64 GB
+```
+```
+./scanner measurements.txt  19.40s user 2.55s system 1270% cpu 1.729 total
+```
