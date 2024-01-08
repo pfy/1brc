@@ -40,7 +40,7 @@ We use a special hashmap, which
 ./scanner measurements.txt  18.39s user 1.35s system 805% cpu 2.450 total
 ```
 
-### on a mac studio
+### on a mac studio
 
 ```
       Model Name: Mac Studio
