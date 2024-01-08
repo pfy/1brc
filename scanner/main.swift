@@ -49,9 +49,10 @@ operationQueue.qualityOfService = .userInteractive
 
 // 3: run a block on every core with an operation queue
 func block(subdata: (Int,Int)) {
+    // 4. Get one accumulator dictionary per thread
     let byCityThreaded = SimpleHashMap(capacity: 10240)
     
-    // 4: inside the block, get raw byte access and iterate over every byte
+    // 5: inside the block, get raw byte access and iterate over every byte
     data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
         
         var pos = subdata.0
@@ -59,7 +60,7 @@ func block(subdata: (Int,Int)) {
         var byte = bytes[pos]
         
         while pos < end {
-            // 5. find the semicolon, while accumulating a byte contining the first 8 bytes of the name
+            // 6. find the semicolon, while accumulating a byte contining the first 8 bytes of the name
             var cityNameHashCode = hash_offset_basis
             var cityName8Bytes = 0 as UInt64
             let cityNameStart = pos
@@ -73,13 +74,13 @@ func block(subdata: (Int,Int)) {
                     byte = bytes[pos]
               
             }
-            // 6. still finding the semicolon, after 8 bytes only calculate the hash
+            // 7. still finding the semicolon, after 8 bytes only calculate the hash
             while byte != semicolon  {
                 cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
                 pos = pos &+ 1
                 byte = bytes[pos]
             }
-            // 7. make a pointer to the hash
+            // 8. make a pointer to the hash
             let cityNameBytes = UnsafeRawBufferPointer(start: bytes.baseAddress!.advanced(by: cityNameStart), count: pos - cityNameStart)
             
             pos = pos &+ 1
@@ -90,14 +91,14 @@ func block(subdata: (Int,Int)) {
             var cityValue = 0 as Int
             var valueSign = 1
             
-            // 8: get the sign or the first number. the number is stored as int
+            // 9: get the sign or the first number. the number is stored as int
             if byte == minus {
                 valueSign = -1;
             } else {
                 cityValue = Int(byte - zero)
             }
             
-            // 9: accumulate numbers until we reach a newline, ignoring the point since the test datas always have one number after the point
+            // 10: accumulate numbers until we reach a newline, ignoring the point since the test datas always have one number after the point
             pos = pos &+ 1
             byte = bytes[pos]
             while byte != newline  {
@@ -111,11 +112,11 @@ func block(subdata: (Int,Int)) {
             pos = pos &+ 1
             byte = bytes[pos]
             let value = cityValue * valueSign
-            // 10: generate a key, containing our hash as Int (Hashable needs an int ..)
+            // 11: generate a key, containing our hash as Int (Hashable needs an int ..)
             let cityNameHashCodeInt = withUnsafeBytes(of: cityNameHashCode) {$0.load(as: Int.self)}
             let cityName = DictionaryKey(hashValue: cityNameHashCodeInt, cityName8Bytes: cityName8Bytes, bytes: cityNameBytes)
             
-            // 11: find or update the statistics element for the city in our special hash. use the find function to get an index
+            // 12: find or update the statistics element for the city in our special hash. use the find function to get an index
             let hashIndex = byCityThreaded.find(key: cityName)
             if let statistic = byCityThreaded.valueAtIndex(index: hashIndex) {
                 statistic.max = max(statistic.max, value);
@@ -126,6 +127,7 @@ func block(subdata: (Int,Int)) {
                 byCityThreaded.insertAtIndex(index: hashIndex, key: cityName, value: Statistic(min: value, max: value, count: 1, sum: value, name: cityNameBytes))
             }
         }
+        // 13. merge the results from all threads
         byCityLock.withLock {
             byCity = byCity.merging(byCityThreaded, uniquingKeysWith: { statistic, statistic2 in
                 statistic.max = max(statistic.max, statistic2.max)
@@ -145,6 +147,7 @@ for subdata in datas {
 
 operationQueue.waitUntilAllOperationsAreFinished()
 
+// 14 print the output
 print("All tasks completed")
 let output = byCity.values.map({ value in
     return (String(bytes: value.name, encoding: .utf8)!, value)
