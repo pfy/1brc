@@ -1,14 +1,16 @@
 # Swift code for the 1billion row challange
-This is a swift implementation for the 1 billion row challange on
+This is a swift implementation for the 1 billion row challenge on
 https://github.com/gunnarmorling/1brc .
+
+The code is in https://github.com/pfy/1brc/blob/main/scanner/main.swift
 
 The idea is the following:
 1. MMAP the file without loading it
-2. Split the file at newline bounderies for every core
+2. Split the file at newline boundaries for every core
 3. For every split, run a block on every core with an operation queue
 4. Get one accumulator dictionary per thread
 5. inside the block, get raw byte access and iterate over every byte
-6. find the semicolon, while accumulating a byte contining the first 8 bytes of the name
+6. find the semicolon, while accumulating a byte containing the first 8 bytes of the name
 7. still finding the semicolon, after 8 bytes only calculate the hash
 8. use a pointer to the city name, do not copy anything
 9. after the semicolon, get the sign or the first number. the number is stored as int
