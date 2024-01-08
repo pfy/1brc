@@ -66,7 +66,7 @@ let zero = "0".data(using: .utf8)![0]
 let point = ".".data(using: .utf8)![0]
 let minus = "-".data(using: .utf8)![0]
 let FNV_prime =  0x100000001b3 as UInt64
-let FNV_offset_basis =   0xcbf29ce484222325 as UInt64
+let FNV_offset_basis =   5381 as UInt64
 
 var byCity = [DictionaryKey: Statistic]()
 var byCityLock = NSRecursiveLock()
@@ -107,35 +107,26 @@ func block(subdata: (Int,Int)) {
             let cityNameStart = pos
             
             while byte != semicolon  {
-                var byteCopy = byte
-                pos = pos &+ 1
-                byte = bytes[pos]
-                cityNameHashCode = (cityNameHashCode ^ UInt64(byteCopy)) &* FNV_prime
-                cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
+                
+                while pos & 0x7 != 0 && byte != semicolon {
+                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) ^ UInt64(byte)
+                    cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
+                    pos = pos &+ 1
+                    byte = bytes[pos]
+                }
                 if byte == semicolon {
                     break
                 }
-                byteCopy = byte
-                pos = pos &+ 1
-                byte = bytes[pos]
-                cityNameHashCode = (cityNameHashCode ^ UInt64(byteCopy)) &* FNV_prime
-                cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
-                if byte == semicolon {
-                    break
+                let bytes8 = bytes.load(fromByteOffset: pos, as: UInt64.self)
+                byte = UInt8(bytes8 & 0xff)
+                var i = 0
+                while i < 8 && byte != semicolon {
+                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) ^ UInt64(byte)
+                    cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
+                    pos = pos &+ 1
+                    i = i &+ 1
+                    byte = UInt8(bytes8 >> (i << 3) & 0xff)
                 }
-                byteCopy = byte
-                pos = pos &+ 1
-                byte = bytes[pos]
-                cityNameHashCode = (cityNameHashCode ^ UInt64(byteCopy)) &* FNV_prime
-                cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
-                if byte == semicolon {
-                    break
-                }
-                byteCopy = byte
-                pos = pos &+ 1
-                byte = bytes[pos]
-                cityNameHashCode = (cityNameHashCode ^ UInt64(byteCopy)) &* FNV_prime
-                cityName8Bytes = cityName8Bytes << 8 | UInt64(byteCopy)
             }
             let cityNameBytes = UnsafeRawBufferPointer(start: bytes.baseAddress!.advanced(by: cityNameStart), count: pos - cityNameStart)
             
@@ -147,16 +138,16 @@ func block(subdata: (Int,Int)) {
              cityNameBytesPtr.copyMemory(from: cityNamePtr)
              }*/
             
-           // var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
+            //var cityNameString = String(bytes: cityNameBytes, encoding: .utf8)
             var cityValue = 0 as Int
             var valueSign = 1
-            if true {
-                if byte == minus {
-                    valueSign = -1;
-                } else {
-                    cityValue = Int(byte - zero)
-                }
+            
+            if byte == minus {
+                valueSign = -1;
+            } else {
+                cityValue = Int(byte - zero)
             }
+            
             pos = pos &+ 1
             byte = bytes[pos]
             while byte != newline  {
@@ -264,7 +255,7 @@ class SimpleHashMap:  Collection, Sequence {
         var index = hash
         while _keys[index] != nil && _keys[index] != key {
             index = (index + distance) & _capcityMask
-            distance = distance * 2
+            distance = distance &* 2
         }
         return index
     }
