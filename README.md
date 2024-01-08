@@ -1,4 +1,4 @@
-# Swift code for the 1billion row challange
+# Swift code for the 1billion row challenge
 This is a swift implementation for the 1 billion row challenge on
 https://github.com/gunnarmorling/1brc .
 
