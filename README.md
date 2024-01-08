@@ -25,7 +25,9 @@ We use a special hashmap, which
 
 ## Results
 (after warm, best of 3)
+
 ### on my m1 pro laptop
+
 ```
       Model Name: MacBook Pro
       Model Identifier: MacBookPro18,2
@@ -39,6 +41,7 @@ We use a special hashmap, which
 ```
 
 ### on a mac studio
+
 ```
       Model Name: Mac Studio
       Model Identifier: Mac13,2
