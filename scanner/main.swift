@@ -52,7 +52,7 @@ operationQueue.qualityOfService = .userInteractive
 // 3: run a block on every core with an operation queue
 func block(subdata: (Int,Int)) {
     // 4. Get one accumulator dictionary per thread
-    let byCityThreaded = SimpleHashMap(capacity: 10240)
+    let byCityThreaded = SimpleHashMap(capacity: 1024 * 50)
     
     // 5: inside the block, get raw byte access and iterate over every byte
     data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
