@@ -8,12 +8,12 @@
 import Foundation
 
 class Statistic {
-    var min: Float;
-    var max: Float;
+    var min: Int;
+    var max: Int;
     var count: Int;
-    var sum: Float;
+    var sum: Int;
     let name: UnsafeRawBufferPointer
-    init(min: Float, max: Float, count: Int, sum: Float, name: UnsafeRawBufferPointer) {
+    init(min: Int, max: Int, count: Int, sum: Int, name: UnsafeRawBufferPointer) {
         self.min = min
         self.max = max
         self.count = count
@@ -43,7 +43,7 @@ struct DictionaryKey: Hashable {
         if rhsCount < 8 {
             return true
         }
-        for i in 0..<(rhsCount - 8) {
+        for i in 8..<(rhsCount) {
             if lhs.bytes[i] != rhs.bytes[i] {
                 return false
             }
@@ -105,28 +105,73 @@ func block(subdata: (Int,Int)) {
             var cityNameHashCode = FNV_offset_basis
             var cityName8Bytes = 0 as UInt64
             let cityNameStart = pos
-            
-            while byte != semicolon  {
-                
-                while pos & 0x7 != 0 && byte != semicolon {
-                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) ^ UInt64(byte)
+            while true {
+                // 0
+                if byte == semicolon {break}
+                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
                     cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
                     pos = pos &+ 1
                     byte = bytes[pos]
-                }
-                if byte == semicolon {
-                    break
-                }
-                let bytes8 = bytes.load(fromByteOffset: pos, as: UInt64.self)
-                byte = UInt8(bytes8 & 0xff)
-                var i = 0
-                while i < 8 && byte != semicolon {
-                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) ^ UInt64(byte)
+                // 1
+                if byte == semicolon {break}
+                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
                     cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
                     pos = pos &+ 1
-                    i = i &+ 1
-                    byte = UInt8(bytes8 >> (i << 3) & 0xff)
-                }
+                    byte = bytes[pos]
+                // 2
+                if byte == semicolon {break}
+                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
+                    cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
+                    pos = pos &+ 1
+                    byte = bytes[pos]
+                // 3
+                if byte == semicolon {break}
+                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
+                    cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
+                    pos = pos &+ 1
+                    byte = bytes[pos]
+                // 4
+                if byte == semicolon {break}
+                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
+                    cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
+                    pos = pos &+ 1
+                    byte = bytes[pos]
+                // 5
+                if byte == semicolon {break}
+                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
+                    cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
+                    pos = pos &+ 1
+                    byte = bytes[pos]
+                // 6
+                if byte == semicolon {break}
+                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
+                    cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
+                    pos = pos &+ 1
+                    byte = bytes[pos]
+                // 7
+                if byte == semicolon {break}
+                    cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
+                    cityName8Bytes = cityName8Bytes << 8 | UInt64(byte)
+                    pos = pos &+ 1
+                    byte = bytes[pos]
+                break;
+            }
+            while byte != semicolon  {
+                cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
+                pos = pos &+ 1
+                byte = bytes[pos]
+                if byte == semicolon {break}
+                cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
+                pos = pos &+ 1
+                byte = bytes[pos]
+                if byte == semicolon {break}
+                cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
+                pos = pos &+ 1
+                byte = bytes[pos]
+                if byte == semicolon {break}
+                cityNameHashCode = (cityNameHashCode << 5 &+ cityNameHashCode) &+ UInt64(byte)
+                pos = pos &+ 1
+                byte = bytes[pos]
             }
             let cityNameBytes = UnsafeRawBufferPointer(start: bytes.baseAddress!.advanced(by: cityNameStart), count: pos - cityNameStart)
             
@@ -151,18 +196,16 @@ func block(subdata: (Int,Int)) {
             pos = pos &+ 1
             byte = bytes[pos]
             while byte != newline  {
-                let byteCopy = byte
-                pos = pos &+ 1
-                byte = bytes[pos]
-                if (byteCopy != point) {
-                    let val = byteCopy - zero
+                if (byte != point) {
+                    let val = byte - zero
                     cityValue = cityValue * 10 + Int(val)
                 }
-                
+                pos = pos &+ 1
+                byte = bytes[pos]
             }
             pos = pos &+ 1
             byte = bytes[pos]
-            let value = Float(cityValue * valueSign) / 10
+            let value = cityValue * valueSign
             
             let cityNameHashCodeInt = withUnsafeBytes(of: cityNameHashCode) {$0.load(as: Int.self)}
             let cityName = DictionaryKey(hashValue: cityNameHashCodeInt, cityName8Bytes: cityName8Bytes, bytes: cityNameBytes)
@@ -202,7 +245,7 @@ let output = byCity.values.map({ value in
     return a.0 < b.0
 }).map{ data in
     let statistics = data.1
-    return  String(format: "%@=%.1f/%.1f/%.1f", data.0, statistics.min, statistics.sum / Float(statistics.count), statistics.max)
+    return  String(format: "%@=%.1f/%.1f/%.1f", data.0, Float(statistics.min) / 10 , Float(statistics.sum) / Float(statistics.count) / 10, Float(statistics.max) / 10)
 }.joined(separator: ", ")
 print("{\(output)}")
 
