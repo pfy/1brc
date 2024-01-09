@@ -212,11 +212,9 @@ class SimpleHashMap:  Collection, Sequence {
     
     @inlinable func find(key: DictionaryKey) -> Int {
         let hash = key.hashValue & _capcityMask
-        var distance = key.hashValue
         var index = hash
         while _keys[index] != nil && _keys[index] != key {
-            index = (index &+ distance) & _capcityMask
-            distance = (distance << 5 &+ distance) &+ 1
+            index = (index &+ 1) & _capcityMask
         }
         return index
     }
