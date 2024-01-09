@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Accelerate
 
 let arguments = CommandLine.arguments
 if arguments.count != 2 {
@@ -59,9 +60,11 @@ func block(subdata: (Int,Int)) {
         
         var pos = subdata.0
         let end = subdata.1
-        var byte = bytes[pos]
+        var byte = 0 as UInt8
         
         while pos < end {
+            byte = bytes[pos]
+
             // 6. find the semicolon, while accumulating a byte contining the first 8 bytes of the name
             var cityNameHashCode = hash_offset_basis
             var cityName8Bytes = 0 as UInt64
@@ -74,7 +77,6 @@ func block(subdata: (Int,Int)) {
                     pos = pos &+ 1
                     i = i &+ 1
                     byte = bytes[pos]
-              
             }
             // 7. still finding the semicolon, after 8 bytes only calculate the hash
             while byte != semicolon  {
@@ -110,7 +112,6 @@ func block(subdata: (Int,Int)) {
                cityValue = Int(bytes[pos]) * 100 + Int(bytes[pos+1]) * 10 + Int(bytes[pos + 3]) - zero111
                 pos = pos &+ 5
             }
-            byte = bytes[pos]
             
             let value = cityValue * valueSign
             // 11: generate a key, containing our hash as Int (Hashable needs an int ..)
