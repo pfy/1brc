@@ -216,7 +216,7 @@ class SimpleHashMap:  Collection, Sequence {
         var index = hash
         while _keys[index] != nil && _keys[index] != key {
             index = (index &+ distance) & _capcityMask
-            distance = (distance << 5 &+ distance)
+            distance = (distance << 5 &+ distance) &+ 1
         }
         return index
     }
